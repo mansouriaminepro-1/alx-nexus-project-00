@@ -1,20 +1,63 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# MenuFight
 
-# Run and deploy your AI Studio app
+A modern restaurant polling application built with Vite, React, and Supabase.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1EHLwO4MmZwV3GKCGjLcwMDplL_vbonq8
+- **Authentication**: Supabase auth with automatic owner profile creation
+- **Poll Management**: Create and manage menu item battles
+- **Real-time Voting**: Track votes and results in real-time
+- **Premium UI**: Modern design with glassmorphism and micro-animations
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Frontend**: Vite + React 19 + TypeScript
+- **Backend**: Supabase (Auth + Database)
+- **Styling**: Tailwind CSS 4
+- **Forms**: React Hook Form + Zod validation
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Prerequisites
+
+- Node.js 18+
+- Supabase account
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/mansouriaminepro-1/alx-nexus-project-00.git
+   cd alx-nexus-project-00
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file with your Supabase credentials:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
+
+4. Run the database trigger SQL (see `supabase_trigger_fixed.sql`)
+
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Database Setup
+
+Run the SQL trigger in your Supabase SQL Editor to automatically sync user signups to the `owners` table:
+
+```sql
+-- See supabase_trigger_fixed.sql for the complete trigger code
+```
+
+## License
+
+ISC
