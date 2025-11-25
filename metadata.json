@@ -1,0 +1,5 @@
+{
+  "name": "MenuFight",
+  "description": "A menu validation platform for restaurants to test items via customer polls before cooking.",
+  "requestFramePermissions": []
+}

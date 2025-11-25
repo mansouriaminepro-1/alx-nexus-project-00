@@ -1,0 +1,15 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Clip Paths for Footer */
+.clip-curve-top {
+    clip-path: ellipse(150% 100% at 50% 100%);
+}
+.clip-curve-bottom {
+    clip-path: ellipse(150% 100% at 50% 0%);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
