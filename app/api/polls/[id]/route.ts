@@ -4,10 +4,10 @@ import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient();
-    const pollId = params.id;
+    const { id: pollId } = await params;
 
     // 1. Fetch Poll Details, Owner, and Items
     const { data: poll, error: pollError } = await supabase
@@ -79,10 +79,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient();
-    const pollId = params.id;
+    const { id: pollId } = await params;
 
     // 1. Check Authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
