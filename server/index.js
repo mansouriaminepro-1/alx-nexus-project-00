@@ -38,6 +38,26 @@ app.get('/api/polls/:id', async (req, res) => {
 
     if (itemsError) throw itemsError;
 
+    // Fetch votes for this poll
+    const { data: votesData, error: votesError } = await supabase
+      .from('votes')
+      .select('poll_item_id')
+      .eq('poll_id', id);
+
+    if (votesError) console.error('Error fetching votes:', votesError);
+
+    // Calculate vote counts
+    const voteCounts = {};
+    let totalVotes = 0;
+    if (votesData) {
+      votesData.forEach(v => {
+        if (v.poll_item_id) {
+          voteCounts[v.poll_item_id] = (voteCounts[v.poll_item_id] || 0) + 1;
+          totalVotes++;
+        }
+      });
+    }
+
     // Calculate time remaining
     const endsAt = new Date(poll.closes_at);
     const now = new Date();
@@ -51,7 +71,7 @@ app.get('/api/polls/:id', async (req, res) => {
       title: poll.title,
       question: poll.description,
       endsIn,
-      totalVotes: items.reduce((sum, item) => sum + (item.votes || 0), 0),
+      totalVotes: totalVotes,
       restaurant: {
         name: poll.owners?.restaurant_name || 'Restaurant',
         location: 'Local Area',
@@ -65,7 +85,7 @@ app.get('/api/polls/:id', async (req, res) => {
         description: item.item_description || '',
         image: item.image_url,
         price: item.price ? `$${item.price}` : '',
-        votes: item.votes || 0
+        votes: voteCounts[item.id] || 0
       }))
     });
   } catch (error) {
@@ -87,7 +107,7 @@ app.post('/api/polls/create', upload.fields([
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
+
     if (authError || !user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
@@ -113,8 +133,8 @@ app.post('/api/polls/create', upload.fields([
 
     // Calculate end time
     const durationMs = duration === '24h' ? 24 * 60 * 60 * 1000
-                     : duration === '48h' ? 48 * 60 * 60 * 1000
-                     : 7 * 24 * 60 * 60 * 1000;
+      : duration === '48h' ? 48 * 60 * 60 * 1000
+        : 7 * 24 * 60 * 60 * 1000;
     const closesAt = new Date(Date.now() + durationMs).toISOString();
 
     // Create poll
@@ -226,6 +246,159 @@ app.post('/api/auth/signup', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+// Dashboard Data
+app.get('/api/dashboard', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    // 1. Fetch Owner Information
+    let { data: owner, error: ownerError } = await supabase
+      .from('owners')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (ownerError || !owner) {
+      // Fallback using auth metadata
+      owner = {
+        restaurant_name: user.user_metadata?.restaurant_name || 'My Restaurant',
+        owner_name: user.email?.split('@')[0] || 'Chef'
+      };
+    }
+
+    // 2. Fetch Polls for Owner with Items
+    const { data: polls, error: pollsError } = await supabase
+      .from('poll')
+      .select(`
+        *,
+        poll_items (
+          id,
+          item_name,
+          item_description,
+          image_url,
+          price,
+          position
+        )
+      `)
+      .eq('owner_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (pollsError) throw pollsError;
+
+    // 3. Fetch Vote Counts Aggregated from 'votes' table
+    const pollIds = polls.map(p => p.id);
+    let voteCounts = {};
+    let itemVoteCounts = {}; // key: poll_item_id
+    let uniqueIps = new Set();
+
+    if (pollIds.length > 0) {
+      const { data: votesData, error: votesError } = await supabase
+        .from('votes')
+        .select('poll_id, poll_item_id, ip_address')
+        .in('poll_id', pollIds);
+
+      if (!votesError && votesData) {
+        votesData.forEach((v) => {
+          voteCounts[v.poll_id] = (voteCounts[v.poll_id] || 0) + 1;
+          if (v.poll_item_id) {
+            itemVoteCounts[v.poll_item_id] = (itemVoteCounts[v.poll_item_id] || 0) + 1;
+          }
+          if (v.ip_address) uniqueIps.add(v.ip_address);
+        });
+      }
+    }
+
+    // 4. Transform Data for Frontend
+    const now = new Date();
+
+    const transformedPolls = polls.map((poll) => {
+      const closesAt = new Date(poll.closes_at);
+      const isActive = poll.is_active && closesAt > now;
+      const totalVotes = voteCounts[poll.id] || 0;
+
+      let timeLabel = '';
+      if (isActive) {
+        const diffMs = closesAt.getTime() - now.getTime();
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const days = Math.floor(hours / 24);
+        if (days > 0) {
+          timeLabel = `${days}d left`;
+        } else {
+          timeLabel = `${hours}h left`;
+        }
+      } else {
+        timeLabel = 'Completed';
+      }
+
+      // Process items with vote percentages
+      const items = (poll.poll_items || []).map((item) => {
+        const votes = itemVoteCounts[item.id] || 0;
+        const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+        return {
+          id: item.id,
+          name: item.item_name,
+          description: item.item_description || '',
+          image: item.image_url || 'https://via.placeholder.com/400?text=No+Image',
+          price: item.price ? `$${item.price}` : '',
+          votes,
+          percentage
+        };
+      });
+
+      const coverImage = items.length > 0
+        ? items[0].image
+        : 'https://via.placeholder.com/400?text=No+Image';
+
+      return {
+        id: poll.id,
+        title: poll.title,
+        status: isActive ? 'Active' : 'Completed',
+        endsIn: timeLabel,
+        totalVotes,
+        date: new Date(poll.created_at).toLocaleDateString(),
+        image: coverImage,
+        items, // Return all items with vote data
+        winRate: isActive ? 'Leading' : 'Winner',
+      };
+    });
+
+    const activePolls = transformedPolls.filter(p => p.status === 'Active');
+    const historyPolls = transformedPolls.filter(p => p.status === 'Completed');
+
+    const totalVotesAllTime = Object.values(voteCounts).reduce((a, b) => a + b, 0);
+
+    res.json({
+      owner: {
+        name: owner?.owner_name || owner?.restaurant_name || 'Chef',
+        restaurantName: owner?.restaurant_name || 'My Restaurant',
+        email: user.email || ''
+      },
+      stats: {
+        totalVotes: totalVotesAllTime,
+        menuWins: historyPolls.length,
+        activeReach: uniqueIps.size,
+      },
+      activePolls,
+      historyPolls
+    });
+
+  } catch (error) {
+    console.error('Dashboard API Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 const PORT = process.env.API_PORT || 3001;
 app.listen(PORT, () => {

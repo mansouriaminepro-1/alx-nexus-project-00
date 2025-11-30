@@ -1,61 +1,115 @@
-import React from 'react';
-import { ArrowRightIcon } from '../ui/icons';
+'use client';
 
-const Testimonials = () => {
-  return (
-    <section id="testimonials" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-serif italic text-gray-400">Feedback</h2>
-            <div className="flex gap-2">
-                 <button className="w-12 h-12 border border-gray-200 rounded-full flex items-center justify-center hover:bg-brand-black hover:text-white transition-colors rotate-180"><ArrowRightIcon /></button>
-                 <button className="w-12 h-12 border border-gray-200 rounded-full flex items-center justify-center hover:bg-brand-black hover:text-white transition-colors"><ArrowRightIcon /></button>
-            </div>
-        </div>
+import React, { useState } from 'react';
 
-        <div className="grid md:grid-cols-2 gap-8">
-            {/* Testimonial 1 - Active */}
-            <div className="bg-brand-lightGray/50 rounded-r-[4rem] rounded-bl-[4rem] rounded-tl-3xl p-10 relative hover:bg-brand-yellow/10 transition-colors duration-300 cursor-pointer group">
-                <div className="flex items-center gap-4 mb-6">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" className="w-16 h-16 rounded-full border-4 border-white shadow-sm object-cover" alt="Omar" />
-                    <div>
-                        <p className="font-bold text-brand-black text-lg">Omar Rahman</p>
-                        <p className="text-xs text-brand-black/50 uppercase tracking-wide font-bold">Owner, The Burger Joint</p>
-                    </div>
+const FAQ = () => {
+    const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+    const faqs = [
+        {
+            question: "What is MenuFight?",
+            answer: "MenuFight is a data-driven platform that helps restaurants validate menu changes before investing in ingredients. Create 1-vs-1 polls to let your customers vote on new menu items, seasonal specials, or recipe variations."
+        },
+        {
+            question: "How does the voting system work?",
+            answer: "You create a battle between two menu items with photos and descriptions. Share the unique link with your customers via social media, email, or QR codes. Customers vote for their favorite, and you get real-time results showing percentages, demographic insights, and total votes."
+        },
+        {
+            question: "How long does a battle last?",
+            answer: "You decide! When creating a battle, you can set the duration from 1 hour to 30 days. Most restaurants run battles for 24-72 hours to gather enough votes while maintaining momentum."
+        },
+        {
+            question: "Can I customize my poll?",
+            answer: "Yes! You can upload custom images for each menu item, write compelling descriptions, set your own battle duration, and customize the poll title. Your restaurant branding and information are displayed on the results page."
+        },
+        {
+            question: "How do I share my battle?",
+            answer: "Each battle gets a unique shareable link. You can share it on social media (Instagram, Facebook, Twitter), send it via email to your customer list, display a QR code in your restaurant, or embed it on your website."
+        }
+    ];
+
+    const toggleFAQ = (index: number) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
+
+    return (
+        <section id="faq" className="py-24 bg-white">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-brand-black mb-4">
+                        Frequently Asked Questions
+                    </h2>
+                    <p className="text-xl text-gray-600 font-medium">
+                        Everything you need to know about MenuFight
+                    </p>
                 </div>
-                <p className="text-brand-black/70 font-medium text-lg leading-relaxed">
-                    "MenuFight completely changed how we launch seasonal menus. We used to guess. Now we know. The ROI on a single month covers the subscription for a year."
-                </p>
-            </div>
 
-             {/* Testimonial 2 - Passive */}
-             <div className="hidden md:block bg-white border border-gray-100 rounded-l-[4rem] rounded-br-[4rem] rounded-tr-3xl p-10 opacity-60 hover:opacity-100 transition-opacity duration-300">
-                <div className="flex items-center gap-4 mb-6">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" className="w-16 h-16 rounded-full border-4 border-white shadow-sm object-cover" alt="Sarah" />
-                    <div>
-                        <p className="font-bold text-brand-black text-lg">Sarah Jenkins</p>
-                        <p className="text-xs text-brand-black/50 uppercase tracking-wide font-bold">Marketing, Fresh Eats</p>
-                    </div>
+                <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                        <div
+                            key={index}
+                            className="border-2 border-gray-100 rounded-2xl overflow-hidden hover:border-brand-yellow/30 transition-colors"
+                        >
+                            <button
+                                onClick={() => toggleFAQ(index)}
+                                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                            >
+                                <span className="font-bold text-brand-black text-lg pr-8">
+                                    {faq.question}
+                                </span>
+                                <svg
+                                    className={`w-6 h-6 text-brand-yellow shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''
+                                        }`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+                            <div
+                                className={`overflow-hidden transition-all duration-300 ${openIndex === index ? 'max-h-96' : 'max-h-0'
+                                    }`}
+                            >
+                                <div className="px-8 pb-6 text-gray-600 leading-relaxed">
+                                    {faq.answer}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                <p className="text-brand-black/70 font-medium text-lg leading-relaxed">
-                    "I never thought data could be this tasty. Our food waste dropped by 20% simply because we stopped cooking things people didn't actually want to buy."
-                </p>
+
+                {/* Beautiful Closing Section */}
+                <div className="mt-24 text-center relative">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[200px] text-brand-yellow/10 font-serif font-bold z-0">"</div>
+                    <p className="text-3xl md:text-5xl font-bold text-brand-black max-w-3xl mx-auto relative z-10 tracking-tight">
+                        Validate your menu. <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-yellow to-brand-black">Grow your business.</span>
+                    </p>
+                </div>
+
+                {/* CTA */}
+                <div className="mt-16 text-center">
+                    <p className="text-gray-600 mb-6 font-medium">
+                        Still have questions? We're here to help!
+                    </p>
+                    <a
+                        href="mailto:support@menufight.com"
+                        className="inline-block bg-brand-black text-white px-8 py-4 rounded-full font-bold hover:bg-gray-800 transition-colors shadow-lg"
+                    >
+                        Contact Support
+                    </a>
+                </div>
+
             </div>
-        </div>
-
-        {/* Big Quote Decoration */}
-        <div className="mt-24 text-center relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[200px] text-brand-yellow/10 font-serif font-bold z-0">“</div>
-            <p className="text-3xl md:text-5xl font-bold text-brand-black max-w-3xl mx-auto relative z-10 tracking-tight">
-                Validate your menu. <br/> 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-yellow to-brand-black">Grow your business.</span>
-            </p>
-        </div>
-
-      </div>
-    </section>
-  );
+        </section>
+    );
 };
 
-export default Testimonials;
+export default FAQ;

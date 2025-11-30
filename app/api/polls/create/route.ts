@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/src/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -6,8 +6,23 @@ export async function POST(request: Request) {
     const supabase = await createClient();
 
     // 1. Check Authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    let user = null;
+
+    // Try Authorization header first (client-side token)
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data } = await supabase.auth.getUser(token);
+      user = data.user;
+    }
+
+    // Fallback to cookies if no user from header
+    if (!user) {
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+    }
+
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized: Please log in first.' }, { status: 401 });
     }
 
@@ -75,7 +90,7 @@ export async function POST(request: Request) {
         const fileExt = imageFile.name.split('.').pop() || 'jpg';
         const sanitizedFileName = `${Date.now()}-${key}.${fileExt}`;
         const filePath = `${pollId}/${sanitizedFileName}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('poll_images')
           .upload(filePath, imageFile, {

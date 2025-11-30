@@ -1,70 +1,85 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MenuFight - Data-Driven Menu Validation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Manrope', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-            },
-            colors: {
-              brand: {
-                yellow: '#FDD835',   // Reference Yellow
-                black: '#111111',    // Reference Black
-                darkGray: '#212121',
-                lightGray: '#F5F5F5',
-                text: '#333333',
-                white: '#FFFFFF',
-                green: '#00C853',
-                red: '#D50000',
-              }
-            },
-            borderRadius: {
-              '4xl': '2rem',
-              '5xl': '3rem',
-            },
-            boxShadow: {
-              'soft': '0 10px 40px -10px rgba(0, 0, 0, 0.08)',
-              'card': '0 20px 50px -12px rgba(0, 0, 0, 0.12)',
-              'plate': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            },
-            animation: {
-              'float': 'float 6s ease-in-out infinite',
-              'float-delayed': 'float 6s ease-in-out 3s infinite',
-            },
-            keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
-              }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MenuFight - Data-Driven Menu Validation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FDD835',   // Reference Yellow
+              black: '#111111',    // Reference Black
+              darkGray: '#212121',
+              lightGray: '#F5F5F5',
+              text: '#333333',
+              white: '#FFFFFF',
+              green: '#00C853',
+              red: '#D50000',
+              orange: '#FF6D00',
+            }
+          },
+          borderRadius: {
+            '4xl': '2rem',
+            '5xl': '3rem',
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(0, 0, 0, 0.08)',
+            'card': '0 20px 50px -12px rgba(0, 0, 0, 0.12)',
+            'plate': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'float-delayed': 'float 6s ease-in-out 3s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
             }
           }
         }
       }
-    </script>
-    <style>
-      body { font-family: 'Manrope', sans-serif; background-color: #FFFFFF; color: #111111; }
-      
-      /* Custom Clip Paths for Footer */
-      .clip-curve-top {
-        clip-path: ellipse(150% 100% at 50% 100%);
-      }
-      .clip-curve-bottom {
-        clip-path: ellipse(150% 100% at 50% 0%);
-      }
-      
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: #FFFFFF;
+      color: #111111;
+    }
+
+    /* Custom Clip Paths for Footer */
+    .clip-curve-top {
+      clip-path: ellipse(150% 100% at 50% 100%);
+    }
+
+    .clip-curve-bottom {
+      clip-path: ellipse(150% 100% at 50% 0%);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -80,10 +95,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="antialiased selection:bg-brand-yellow selection:text-brand-black">
-    <div id="root"></div>
+
+<body class="antialiased selection:bg-brand-yellow selection:text-brand-black">
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

@@ -1,5 +1,5 @@
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/src/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
@@ -37,31 +37,31 @@ export async function POST(request: Request) {
 
     // 2. Insert into 'owners' table using SERVICE ROLE key to bypass RLS/Auth issues during signup
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    
+
     if (serviceRoleKey) {
       const adminClient = createSupabaseClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          serviceRoleKey,
-          {
-              auth: {
-                  autoRefreshToken: false,
-                  persistSession: false
-              }
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
           }
+        }
       );
 
       const { error: dbError } = await adminClient
-          .from('owners')
-          .upsert({
-            id: authData.user.id,
-            restaurant_name: restaurantName,
-            owner_name: email.split('@')[0],
-            created_at: new Date().toISOString(),
-          });
+        .from('owners')
+        .upsert({
+          id: authData.user.id,
+          restaurant_name: restaurantName,
+          owner_name: email.split('@')[0],
+          created_at: new Date().toISOString(),
+        });
 
       if (dbError) {
-          console.error('Owner Creation Error:', dbError);
-          // Don't fail the whole request if only the profile fails, but log it
+        console.error('Owner Creation Error:', dbError);
+        // Don't fail the whole request if only the profile fails, but log it
       }
     }
 

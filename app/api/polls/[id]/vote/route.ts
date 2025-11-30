@@ -1,5 +1,5 @@
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/src/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -8,8 +8,24 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const pollId = params.id;
     const { itemId } = await request.json();
 
+    // Get IP address
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const ip = forwardedFor ? forwardedFor.split(',')[0] : 'unknown';
+
     if (!itemId) {
-        return NextResponse.json({ error: 'Item ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Item ID is required' }, { status: 400 });
+    }
+
+    // Check if this IP has already voted for this poll
+    const { data: existingVote, error: checkError } = await supabase
+      .from('votes')
+      .select('id')
+      .eq('poll_id', pollId)
+      .eq('ip_address', ip)
+      .single();
+
+    if (existingVote) {
+      return NextResponse.json({ error: 'You have already voted in this poll.' }, { status: 403 });
     }
 
     // 1. Insert Vote into 'votes' table
@@ -18,6 +34,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .insert({
         poll_id: pollId,
         poll_item_id: itemId,
+        ip_address: ip
       });
 
     if (error) {
