@@ -5,7 +5,7 @@ import PollInfoForm from '../../components/create-poll/PollInfoForm';
 import PollItemsForm from '../../components/create-poll/PollItemsForm';
 import SubmitButton from '../../components/create-poll/SubmitButton';
 import { ArrowRightIcon } from '../../components/ui/icons';
-import { createClient } from '../../src/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import DashboardNavbar from '../../components/dashboard/DashboardNavbar';
 
 

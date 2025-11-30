@@ -44,6 +44,9 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "debug_trigger.ts",
+    "test_signup.ts",
+    "vite.config.ts"
   ]
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { createClient } from '../../src/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import { LayoutIcon, UsersIcon } from '../ui/icons';
 
 interface DashboardNavbarProps {

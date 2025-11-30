@@ -8,7 +8,7 @@ import BattleHistory from '../../components/dashboard/BattleHistory';
 import Sidebar from '../../components/dashboard/Sidebar';
 import DashboardNavbar from '../../components/dashboard/DashboardNavbar';
 
-import { createClient } from '../../src/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 
 const API_URL = 'http://localhost:3001';
 

@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { ArrowRightIcon } from '../ui/icons';
-import { createClient } from '../../src/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);

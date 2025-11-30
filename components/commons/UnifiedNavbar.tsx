@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '../../src/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import Navbar from './Navbar';
 import DashboardNavbar from '../dashboard/DashboardNavbar';
 
